@@ -13,13 +13,21 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <h1>Modulos </h1>
+                   
+                   
+                    @if($permissionsCount == 0)
+                        <h1>No tienes permisos asignados.</h1>
+                    @else
+                        <h1>Modulos </h1>
+                    @endif
+
+
                     @can('viewAny posts')
                     <div class="card mt-4 col-6">
                         <div class="card-body">
                             <!-- Título clicable para colapsar/expandir -->
                             <a href="#permissionsList" class="text-primary font-weight-bold h5 text-decoration-none" data-toggle="collapse" aria-expanded="false" aria-controls="permissionsList">
-                                <i class="bi bi-caret-right-fill"></i> Permisos del Usuario
+                                <i class="bi bi-caret-right-fill"></i> Modulo posts
                                 <span class="badge badge-pill badge-info ml-2" style="vertical-align: super;">{{ $permissionsCount }}</span>
                             </a>
                     
