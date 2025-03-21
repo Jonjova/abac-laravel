@@ -11,7 +11,7 @@
 
 
     @can('create posts')
-        <a href="{{ route('posts.create') }}" class="btn btn-primary">Crear Post</a>
+        <a href="{{ route('posts.create') }}" class="btn btn-primary mb-2">Crear Post</a>
     @endcan
 
     <table class="table">

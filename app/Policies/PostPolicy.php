@@ -18,7 +18,7 @@ class PostPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->hasPermissionTo('view posts') ?: abort(403, 'No tienes permiso para ver los posts.');
     }
 
     /**
@@ -30,7 +30,7 @@ class PostPolicy
      */
     public function view(User $user, Post $post)
     {
-        return $user->hasPermissionTo('view posts');
+        
     }
 
     /**
@@ -41,7 +41,7 @@ class PostPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermissionTo('create posts');
+        return $user->hasPermissionTo('create posts') ?: abort(403, 'No tienes permiso para crear posts.');
     }
 
     /**
@@ -53,7 +53,7 @@ class PostPolicy
      */
     public function update(User $user, Post $post)
     {
-        return $user->hasPermissionTo('edit posts');
+        return $user->hasPermissionTo('edit posts') ?: abort(403, 'No tienes permiso para editar posts.');
     }
 
     /**
@@ -65,7 +65,7 @@ class PostPolicy
      */
     public function delete(User $user, Post $post)
     {
-        return $user->hasPermissionTo('delete posts');
+        return $user->hasPermissionTo('delete posts') ?: abort(403, 'No tienes permiso para eliminar posts.');
     }
 
     /**

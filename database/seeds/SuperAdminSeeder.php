@@ -14,18 +14,20 @@ class SuperAdminSeeder extends Seeder
      */
     public function run()
     {
-        // Crear el super admin
-        $superAdmin = User::create([
+         // Crear el super admin
+         $superAdmin = User::create([
             'name' => 'Super Admin',
             'email' => 'admin@admin.com',
             'password' => bcrypt('password'), // Cambia 'password' por una contraseña segura
         ]);
     
         // Crear permisos
-        $viewPosts = Permission::create(['name' => 'view posts']);
-        $viewPosts = Permission::create(['name' => 'create posts']);
-        $deletePosts = Permission::create(['name' => 'delete posts']);
-    
+        Permission::insert([
+            ['name' => 'view posts', 'guard_name' => 'web'],
+            ['name' => 'create posts', 'guard_name' => 'web'],
+            ['name' => 'delete posts', 'guard_name' => 'web'],
+            ['name' => 'viewAny posts', 'guard_name' => 'web'],
+        ]);
         // Crear el rol de super admin
         $superAdminRole = Role::create(['name' => 'super admin']);
     
@@ -34,22 +36,6 @@ class SuperAdminSeeder extends Seeder
     
         // Asignar el rol de super admin al usuario
         $superAdmin->assignRole($superAdminRole);
-    
-        // Crear el rol de manager
-        $managerRole = Role::create(['name' => 'manager']);
-    
-        // Asignar permisos al rol de manager
-        $managerRole->givePermissionTo([$viewPosts, $deletePosts]);
-    
-        // Crear un usuario manager
-        $manager = User::create([
-            'name' => 'Manager User',
-            'email' => 'manager@example.com',
-            'password' => bcrypt('managerpassword'), // Cambia 'managerpassword' por una contraseña segura
-        ]);
-    
-        // Asignar el rol de manager al usuario
-        $manager->assignRole($managerRole);
     
     }
 }

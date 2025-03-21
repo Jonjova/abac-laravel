@@ -9,20 +9,20 @@ class PostController extends Controller
 {
     public function index()
     {
-        $this->authorize('view posts');
+        $this->authorize('viewAny', Post::class);
         $posts = Post::all();
         return view('posts.index', compact('posts'));
     }
 
     public function create()
     {
-        $this->authorize('create posts');
+        $this->authorize('create', Post::class);
         return view('posts.create');
     }
 
     public function store(Request $request)
     {
-        $this->authorize('create posts');
+        $this->authorize('create', Post::class);
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',

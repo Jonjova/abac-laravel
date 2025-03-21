@@ -30,7 +30,7 @@ class CheckAbac
         ];
 
         // Ejemplo de regla ABAC: Denegar acceso fuera del horario permitido
-        if ($attribute === 'time_based' && $context['time'] > '18:00') {
+        if ($attribute === 'time_based' && $context['time'] > '2:00') {
             abort(403, 'Acceso denegado fuera del horario permitido.');
         }
 

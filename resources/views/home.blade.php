@@ -13,8 +13,14 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    You are logged in!
+                    <h1>Modulos</h1>
+                    @can('viewAny posts')
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <a href="{{ route('posts.index') }}" class="text-primary font-weight-bold h5 text-decoration-none">Post</a>
+                            </div>
+                        </div>
+                    @endcan
                 </div>
             </div>
         </div>
