@@ -17,13 +17,15 @@ class EditorSeeder extends Seeder
         // Crear permisos si no existen
         $viewPosts = Permission::firstOrCreate(['name' => 'view posts']);
         $createPosts = Permission::firstOrCreate(['name' => 'create posts']);
-        $viewAnyPosts = Permission::firstOrCreate(['name' => 'viewAny posts']);
+        // $viewAnyPosts = Permission::firstOrCreate(['name' => 'viewAny posts']);
     
         // Crear el rol de editor
         $editorRole = Role::create(['name' => 'editor']);
     
         // Asignar permisos al rol de editor
-        $editorRole->givePermissionTo([$viewPosts, $createPosts, $viewAnyPosts]);
+        if (!empty($viewAnyPosts)) {
+            $editorRole->givePermissionTo([$viewPosts, $createPosts]);
+        }
     
         // Crear un usuario editor
         $editor = User::create([

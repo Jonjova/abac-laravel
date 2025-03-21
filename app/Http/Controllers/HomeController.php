@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Spatie\Permission\Models\Permission;
 
 use Illuminate\Http\Request;
 
@@ -23,6 +24,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('login'); // Redirige si el usuario no está autenticado
+        }
+
+        $permissions = $user->getAllPermissions();
+        $permissionsCount = $permissions->count();
+
+        return view('home', compact('permissionsCount', 'permissions'));
     }
 }

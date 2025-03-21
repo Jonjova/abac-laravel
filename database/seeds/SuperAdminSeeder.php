@@ -26,6 +26,7 @@ class SuperAdminSeeder extends Seeder
             ['name' => 'view posts', 'guard_name' => 'web'],
             ['name' => 'create posts', 'guard_name' => 'web'],
             ['name' => 'delete posts', 'guard_name' => 'web'],
+            ['name' => 'edit posts', 'guard_name' => 'web'],
             ['name' => 'viewAny posts', 'guard_name' => 'web'],
         ]);
         // Crear el rol de super admin

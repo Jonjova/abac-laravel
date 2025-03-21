@@ -32,4 +32,36 @@ class PostController extends Controller
 
         return redirect()->route('posts.index')->with('success', 'Post creado correctamente.');
     }
+
+    public function show(Post $post)
+    {
+        $this->authorize('view', $post);
+        return view('posts.show', compact('post'));
+    }
+
+    public function edit(Post $post)
+    {
+        $this->authorize('update', $post);
+        return view('posts.edit', compact('post'));
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        $this->authorize('update', $post);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
+
+        $post->update($request->only('title', 'content'));
+
+        return redirect()->route('posts.index')->with('success', 'Post actualizado correctamente.');
+    }
+
+    public function destroy(Post $post)
+    {
+        $this->authorize('delete', $post);
+        $post->delete();
+        return redirect()->route('posts.index')->with('success', 'Post eliminado correctamente.');
+    }
 }

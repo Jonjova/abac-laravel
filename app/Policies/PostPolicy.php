@@ -30,7 +30,7 @@ class PostPolicy
      */
     public function view(User $user, Post $post)
     {
-        
+        return $user->hasPermissionTo('view posts') ?: abort(403, 'No tienes permiso para ver este post.');
     }
 
     /**
