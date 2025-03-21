@@ -8,13 +8,27 @@
             {{ session('success') }}
         </div>
     @endif
-    <ul>
-        @foreach ($posts as $post)
-            <li>
-                <h2>{{ $post->title }}</h2>
-                <p>{{ $post->content }}</p>
-            </li>
-        @endforeach
-    </ul>
+
+
+    @can('create posts')
+        <a href="{{ route('posts.create') }}" class="btn btn-primary">Crear Post</a>
+    @endcan
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Contenido</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($posts as $post)
+                <tr>
+                    <td>{{ $post->title }}</td>
+                    <td>{{ $post->content }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 @endsection
