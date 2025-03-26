@@ -25,15 +25,17 @@ class HomeController extends Controller
                 ? $permission->details 
                 : json_decode($permission->details, true);
             
-            $moduleName = $details['module'] ?? 'general';
+            $moduleName = $details['module']['name'] ?? 'general';
             $moduleSlug = Str::slug($moduleName);
+            $moduleIcon = $details['module']['icon'] ?? 'folder';
+            $moduleColor = $details['module']['color'] ?? 'info';
             
             if (!isset($modules[$moduleSlug])) {
                 $modules[$moduleSlug] = [
                     'name' => $moduleName,
                     'permissions' => [],
-                    'icon' => $this->getModuleIcon($moduleName),
-                    'color' => $this->getModuleColor($moduleName),
+                    'icon' => $moduleIcon,
+                    'color' => $moduleColor,
                     'view_permission' => 'viewAny '.strtolower($moduleName)
                 ];
             }
@@ -46,23 +48,4 @@ class HomeController extends Controller
         ]);
     }
 
-    private function getModuleIcon($module)
-    {
-        $icons = [
-            'posts' => 'file-alt',
-            'users' => 'users',
-            'settings' => 'cog'
-        ];
-        return $icons[strtolower($module)] ?? 'folder';
-    }
-
-    private function getModuleColor($module)
-    {
-        $colors = [
-            'posts' => 'primary',
-            'users' => 'success',
-            'settings' => 'warning'
-        ];
-        return $colors[strtolower($module)] ?? 'info';
-    }
 }

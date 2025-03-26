@@ -27,8 +27,16 @@ class SuperAdminSeeder extends Seeder
                 'name' => 'view posts',
                 'guard_name' => 'web',
                 'details' => json_encode([
-                    'module' => 'Posts',
-                    'permission_code' => 'POST-VW',
+                    'module' => [
+                        'name' => 'Posts',
+                        'icon' => 'file-alt',
+                        'color' => 'text-dark',
+                    ],
+                    'permission'=> [
+                        'icon' => 'fa-eye',
+                        'code' => 'POST-VW',
+                        'color' => 'text-dark',
+                    ],
                     'descriptions' => [
                         'es' => 'Permite ver posts',
                         'en' => 'Allows viewing posts',
@@ -39,8 +47,16 @@ class SuperAdminSeeder extends Seeder
                 'name' => 'create posts',
                 'guard_name' => 'web',
                 'details' => json_encode([
-                    'module' => 'Posts',
-                    'permission_code' => 'POST-CR',
+                    'module' => [
+                        'name' => 'Posts',
+                        'icon' => 'file-alt',
+                        'color' => 'text-dark',
+                    ],
+                    'permission' => [
+                        'icon' => 'fa-plus-circle',
+                        'code' => 'POST-CR',
+                        'color' => 'text-dark',
+                    ],
                     'descriptions' => [
                         'es' => 'Permite crear posts',
                         'en' => 'Allows creating posts',
@@ -51,8 +67,16 @@ class SuperAdminSeeder extends Seeder
                 'name' => 'delete posts',
                 'guard_name' => 'web',
                 'details' => json_encode([
-                    'module' => 'Posts',
-                    'permission_code' => 'POST-DL',
+                    'module' => [
+                        'name' => 'Posts',
+                        'icon' => 'file-alt',
+                        'color' => 'text-dark',
+                    ],
+                    'permission' => [
+                        'icon' => 'fa-trash',
+                        'code' => 'POST-DL',
+                        'color' => 'text-dark',
+                    ],
                     'descriptions' => [
                         'es' => 'Permite eliminar posts',
                         'en' => 'Allows deleting posts',
@@ -63,8 +87,16 @@ class SuperAdminSeeder extends Seeder
                 'name' => 'edit posts',
                 'guard_name' => 'web',
                 'details' => json_encode([
-                    'module' => 'Posts',
-                    'permission_code' => 'POST-ED',
+                    'module' => [
+                        'name' => 'Posts',
+                        'icon' => 'file-alt',
+                        'color' => 'text-dark',
+                    ],
+                    'permission' => [
+                        'icon' => 'fa-pencil-alt',
+                        'code' => 'POST-ED',
+                        'color' => 'text-dark',
+                    ],
                     'descriptions' => [
                         'es' => 'Permite editar posts',
                         'en' => 'Allows editing posts',
@@ -75,8 +107,16 @@ class SuperAdminSeeder extends Seeder
                 'name' => 'viewAny posts',
                 'guard_name' => 'web',
                 'details' => json_encode([
-                    'module' => 'Posts',
-                    'permission_code' => 'POST-VWA',
+                    'module' => [
+                        'name' => 'Posts',
+                        'icon' => 'file-alt',
+                        'color' => 'text-dark',
+                    ],
+                    'permission' => [
+                        'icon' => 'fa-cog',
+                        'code' => 'POST-VWA',
+                        'color' => 'text-dark',
+                    ],
                     'descriptions' => [
                         'es' => 'Permite ver módulo post',
                         'en' => 'Allows viewing the post module',

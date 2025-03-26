@@ -18,7 +18,7 @@ class PostPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermissionTo('view posts') ?: abort(403, 'No tienes permiso para ver los posts.');
+        return $user->hasPermissionTo('viewAny posts') ?: abort(403, 'No tienes permiso para ver los posts.');
     }
 
     /**
