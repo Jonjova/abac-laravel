@@ -33,7 +33,7 @@
                                 @foreach ($modules as $moduleSlug => $moduleData)
                                     @can($moduleData['view_permission'])
                                         <div class="col-lg-6 mb-4">
-                                            <div class="card h-100 shadow-sm"
+                                            <div class="card overflow-hidden shadow-sm"
                                                 style="border-radius: 10px; border-left: 4px solid var(--module-color);">
                                                 <div class="card-header bg-white d-flex justify-content-between align-items-center cursor-pointer"
                                                     data-toggle="collapse" data-target="#{{ $moduleSlug }}Module"
@@ -49,7 +49,8 @@
                                                             style="background-color: var(--module-bg); ">
                                                             {{ count($moduleData['permissions']) }} permisos
                                                         </span>
-                                                        <i class="fas fa-chevron-down collapse-icon"></i>
+                                                        <i class="fas fa-chevron-down collapse-icon"
+                                                            id="collapse-icon-{{ $moduleSlug }}"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -106,68 +107,4 @@
             </div>
         </div>
     </div>
-
-    @push('styles')
-        <style>
-            :root {
-                --module-primary: #4e73df;
-                --module-success: #1cc88a;
-                --module-warning: #f6c23e;
-                --module-info: #36b9cc;
-            }
-
-            .cursor-pointer {
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .cursor-pointer:hover {
-                transform: translateY(-2px);
-            }
-
-            .collapse-icon {
-                transition: transform 0.3s ease;
-            }
-
-            .collapsed .collapse-icon {
-                transform: rotate(-90deg);
-            }
-
-            .bg-gradient-primary {
-                background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-            }
-
-            .card {
-                transition: all 0.3s ease;
-                border: none;
-            }
-
-            .card:hover {
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            }
-
-            .list-group-item {
-                transition: background-color 0.3s ease;
-            }
-
-            .list-group-item:hover {
-                background-color: #f8f9fa !important;
-            }
-        </style>
-    @endpush
-
-    @push('scripts')
-        <script>
-            $(document).ready(function() {
-                // Convertir hex a rgb
-                function hexToRgb(hex) {
-                    hex = hex.trim().replace('#', '');
-                    var r = parseInt(hex.substring(0, 2), 16);
-                    var g = parseInt(hex.substring(2, 4), 16);
-                    var b = parseInt(hex.substring(4, 6), 16);
-                    return r + ',' + g + ',' + b;
-                }
-            });
-        </script>
-    @endpush
 @endsection

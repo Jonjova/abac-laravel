@@ -28,7 +28,7 @@ class PostPolicy
      * @param  \App\Post  $post
      * @return mixed
      */
-    public function view(User $user, Post $post)
+    public function view(User $user)
     {
         return $user->hasPermissionTo('view posts') ?: abort(403, 'No tienes permiso para ver este post.');
     }
@@ -51,7 +51,7 @@ class PostPolicy
      * @param  \App\Post  $post
      * @return mixed
      */
-    public function update(User $user, Post $post)
+    public function update(User $user)
     {
         return $user->hasPermissionTo('edit posts') ?: abort(403, 'No tienes permiso para editar posts.');
     }
@@ -63,7 +63,7 @@ class PostPolicy
      * @param  \App\Post  $post
      * @return mixed
      */
-    public function delete(User $user, Post $post)
+    public function delete(User $user)
     {
         return $user->hasPermissionTo('delete posts') ?: abort(403, 'No tienes permiso para eliminar posts.');
     }
@@ -75,7 +75,7 @@ class PostPolicy
      * @param  \App\Post  $post
      * @return mixed
      */
-    public function restore(User $user, Post $post)
+    public function restore(User $user)
     {
         //
     }
@@ -87,7 +87,7 @@ class PostPolicy
      * @param  \App\Post  $post
      * @return mixed
      */
-    public function forceDelete(User $user, Post $post)
+    public function forceDelete(User $user)
     {
         //
     }

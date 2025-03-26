@@ -17,7 +17,7 @@ class UsersPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermissionTo('viewAny user') ?: abort(403, 'No tienes permiso para ver el modulo usuario.');
+        return $user->hasPermissionTo('viewAny users') ?: abort(403, 'No tienes permiso para ver el modulo usuario.');
     }
 
     /**
@@ -29,7 +29,7 @@ class UsersPolicy
      */
     public function view(User $user)
     {
-        return $user->hasPermissionTo('view user') ?: abort(403, 'No tienes permiso para ver este usuario.');
+        return $user->hasPermissionTo('view users') ?: abort(403, 'No tienes permiso para ver usuario.');
     }
 
     /**
@@ -40,7 +40,7 @@ class UsersPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermissionTo('create user') ?: abort(403, 'No tienes permiso para crear usuario.');
+        return $user->hasPermissionTo('create users') ?: abort(403, 'No tienes permiso para crear usuario.');
     }
 
     /**
@@ -52,7 +52,7 @@ class UsersPolicy
      */
     public function update(User $user)
     {
-        return $user->hasPermissionTo('edit user') ?: abort(403, 'No tienes permiso para editar usuario.');
+        return $user->hasPermissionTo('edit users') ?: abort(403, 'No tienes permiso para editar usuario.');
     }
 
     /**
@@ -64,7 +64,7 @@ class UsersPolicy
      */
     public function delete(User $user)
     {
-        return $user->hasPermissionTo('delete user') ?: abort(403, 'No tienes permiso para eliminar usuario.');
+        return $user->hasPermissionTo('delete users') ?: abort(403, 'No tienes permiso para eliminar usuario.');
     }
 
     /**
