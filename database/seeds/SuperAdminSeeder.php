@@ -21,7 +21,6 @@ class SuperAdminSeeder extends Seeder
             'password' => bcrypt('password'), // Cambia 'password' por una contraseña segura
         ]);
 
-       
         // Crear el rol de super admin
         $superAdminRole = Role::create(['name' => 'super admin']);
 
