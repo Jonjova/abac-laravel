@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class UsuariosController extends Controller
 {
@@ -61,7 +62,8 @@ class UsuariosController extends Controller
     public function edit(User $user)
     {
         $this->authorize('edit users');
-        return view('users.edit', compact('user'));
+        $roles = Role::all(); // Assuming you have a Role model
+        return view('users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -78,9 +80,21 @@ class UsuariosController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,id',
+        ],[
+            'name.required' => 'El nombre es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El correo electrónico debe ser una dirección válida.',
+            'email.unique' => 'El correo electrónico ya está en uso.',
+            'roles.required' => 'Seleccione al menos un rol.',
+            'roles.*.exists' => 'Uno o más roles seleccionados no son válidos.',
         ]);
 
         $user->update($request->only('name', 'email'));
+
+        // Sync the roles with the user
+        $user->roles()->sync($request->input('roles'));
 
         return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
     }
