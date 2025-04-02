@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UsuariosController extends Controller
 {
@@ -110,5 +111,57 @@ class UsuariosController extends Controller
         $this->authorize('delete users');
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
+    }
+
+    /**
+     * Show the form for assigning permissions to the user.
+     *
+     * @param  \App\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function permissions(User $user)
+    {
+        $this->authorize('assignPermissions users');
+        $permissions = Permission::all()->sortBy('name');
+    
+        return view('users.permissions', compact('user', 'permissions'));
+    }
+
+    /**
+     * Assign permissions to the user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function assignPermissions(Request $request, User $user)
+    {
+        $this->authorize('assignPermissions users');
+
+        $request->validate([
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,id',
+        ], [
+            'permissions.required' => 'Seleccione al menos un permiso.',
+            'permissions.*.exists' => 'Uno o más permisos seleccionados no son válidos.',
+        ]);
+
+        // Sync the permissions with the user
+        $user->syncPermissions($request->input('permissions'));
+
+        return redirect()->route('users.permissions', $user->id)->with('success', 'Permisos asignados correctamente.');
+    }
+
+    /**
+     * Determine whether the user can revoke permissions from the users.
+     *
+     * @param  \App\User  $user
+     * @return mixed
+     */
+    public function revokePermissions(User $user, Permission $permission)
+    {
+        $user->revokePermissionTo($permission);
+        
+        return back()->with('success', 'Permiso revocado correctamente.');
     }
 }

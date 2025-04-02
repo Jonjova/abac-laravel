@@ -24,7 +24,6 @@ class UsersPolicy
      * Determine whether the user can view the users.
      *
      * @param  \App\User  $user
-     * @param  \App\Users  $users
      * @return mixed
      */
     public function view(User $user)
@@ -47,7 +46,6 @@ class UsersPolicy
      * Determine whether the user can update the users.
      *
      * @param  \App\User  $user
-     * @param  \App\Users  $users
      * @return mixed
      */
     public function update(User $user)
@@ -59,7 +57,6 @@ class UsersPolicy
      * Determine whether the user can delete the users.
      *
      * @param  \App\User  $user
-     * @param  \App\Users  $users
      * @return mixed
      */
     public function delete(User $user)
@@ -71,7 +68,6 @@ class UsersPolicy
      * Determine whether the user can restore the users.
      *
      * @param  \App\User  $user
-     * @param  \App\Users  $users
      * @return mixed
      */
     public function restore(User $user)
@@ -83,11 +79,33 @@ class UsersPolicy
      * Determine whether the user can permanently delete the users.
      *
      * @param  \App\User  $user
-     * @param  \App\Users  $users
      * @return mixed
      */
     public function forceDelete(User $user)
     {
         //
     }
+
+    /**
+     * Determine whether the user can assign permissions to the users.
+     *
+     * @param  \App\User  $user
+     * @return mixed
+     */
+    public function assignPermissions(User $user)
+    {
+        return $user->hasPermissionTo('assign users') ?: abort(403, 'No tienes permiso para asignar permisos a usuario.');
+    }
+
+    /**
+     * Determine whether the user can revoke permissions from the users.
+     *
+     * @param  \App\User  $user
+     * @return mixed
+     */
+    public function revokePermissions(User $user)
+    {
+        return $user->hasPermissionTo('revoke users') ?: abort(403, 'No tienes permiso para revocar permisos a usuario.');
+    }
+
 }

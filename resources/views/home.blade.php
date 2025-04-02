@@ -53,7 +53,7 @@
                                                             id="collapse-icon-{{ $moduleSlug }}"></i>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="collapse" id="{{ $moduleSlug }}Module">
                                                     <div class="card-body" style="background-color: #fefefe;">
                                                         <div class="list-group list-group-flush">
@@ -75,11 +75,26 @@
                                                                         <div class="flex-grow-1">
                                                                             <div style="color: #4a5568; font-weight: 500;">
                                                                                 {{ $details['descriptions']['es'] ?? 'Sin descripción' }}
+                                                                                @if (isset($details['permission']['code']) && Illuminate\Support\Str::endsWith($details['permission']['code'], '-VW'))
+                                                                                    @php
+                                                                                        $routeBase = strtolower(Illuminate\Support\Str::beforeLast($details['permission']['code'], '-VW'));
+                                                                                        $routePlural = Illuminate\Support\Str::plural($routeBase);
+                                                                                        $routeName = $routePlural . '.index';
+                                                                                    
+                                                                                        $displayName = ucfirst(str_replace('_', ' ', $routeBase));
+                                                                                    @endphp
+                                                                            
+                                                                                    @if(Route::has($routeName))
+                                                                                        <a href="{{ route($routeName) }}" class="text-blue-600 hover:underline ml-1 float-right">Ver modulo de: {{ $displayName }}</a>
+                                                                                    @endif
+                                                                                @endif
                                                                             </div>
                                                                             <div class="mt-1">
                                                                                 <small class="text-muted">
                                                                                     <i class="fas fa-key mr-1"></i>
-                                                                                    {{ $details['permission']['code'] ?? '' }}
+                                                                                    {{-- @if (!isset($details['permission']['code']) || !Illuminate\Support\Str::endsWith($details['permission']['code'], '-VWA')) --}}
+                                                                                        {{ $details['permission']['code'] ?? '' }}
+                                                                                    {{-- @endif --}}
                                                                                 </small>
                                                                             </div>
                                                                         </div>
