@@ -118,6 +118,7 @@ class PermissionsSeeder extends Seeder
 
         // Permisos para Usuarios
         Permission::insert([
+            // Permisos para ver usuarios
             [
                 'name' => 'view users',
                 'guard_name' => 'web',
@@ -127,7 +128,7 @@ class PermissionsSeeder extends Seeder
                         'icon' => 'users',
                         'color' => 'text-primary',
                     ],
-                    'permission'=> [
+                    'permission' => [
                         'icon' => 'fa-eye',
                         'code' => 'USER-VW',
                         'color' => 'text-primary',
@@ -138,6 +139,7 @@ class PermissionsSeeder extends Seeder
                     ],
                 ]),
             ],
+            // Permisos para crear usuarios
             [
                 'name' => 'create users',
                 'guard_name' => 'web',
@@ -158,6 +160,7 @@ class PermissionsSeeder extends Seeder
                     ],
                 ]),
             ],
+            // Permisos para eliminar usuarios
             [
                 'name' => 'delete users',
                 'guard_name' => 'web',
@@ -178,6 +181,7 @@ class PermissionsSeeder extends Seeder
                     ],
                 ]),
             ],
+            // Permisos para editar usuarios
             [
                 'name' => 'edit users',
                 'guard_name' => 'web',
@@ -198,6 +202,7 @@ class PermissionsSeeder extends Seeder
                     ],
                 ]),
             ],
+            // Permisos para ver el módulo de usuarios
             [
                 'name' => 'viewAny users',
                 'guard_name' => 'web',
@@ -215,6 +220,70 @@ class PermissionsSeeder extends Seeder
                     'descriptions' => [
                         'es' => 'Permite ver módulo usuario',
                         'en' => 'Allows viewing the user module',
+                    ],
+                ]),
+            ],
+            // Permisos para asignar permisos a usuarios
+            [
+                'name' => 'assignPermissions users',
+                'guard_name' => 'web',
+                'details' => json_encode([
+                    'module' => [
+                        'name' => 'Users',
+                        'icon' => 'users',
+                        'color' => 'text-primary',
+                    ],
+                    'permission' => [
+                        'icon' => 'fa-user-check',
+                        'code' => 'USER-ASGN',
+                        'color' => 'text-primary',
+                    ],
+                    'descriptions' => [
+                        'es' => 'Permite asignar permisos a usuarios',
+                        'en' => 'Allows assigning permissions to users',
+                    ],
+                ]),
+            ],
+            // Permisos para revocar permisos de usuarios
+            [
+                'name' => 'revokePermission users',
+                'guard_name' => 'web',
+                'details' => json_encode([
+                    'module' => [
+                        'name' => 'Users',
+                        'icon' => 'users',
+                        'color' => 'text-primary',
+                    ],
+                    'permission' => [
+                        'icon' => 'fa-user-times',
+                        'code' => 'USER-RVK',
+                        'color' => 'text-primary',
+                    ],
+                    'descriptions' => [
+                        'es' => 'Permite revocar permisos a usuarios',
+                        'en' => 'Allows revoking permissions from users',
+                    ],
+                ]),
+            ],
+
+            // Permisos para actualizar permisos de roles
+            [
+                'name' => 'updateRolePermissions users',
+                'guard_name' => 'web',
+                'details' => json_encode([
+                    'module' => [
+                        'name' => 'Users',
+                        'icon' => 'users',
+                        'color' => 'text-primary',
+                    ],
+                    'permission' => [
+                        'icon' => 'fa-user-shield',
+                        'code' => 'USER-URP',
+                        'color' => 'text-primary',
+                    ],
+                    'descriptions' => [
+                        'es' => 'Permite actualizar permisos de roles',
+                        'en' => 'Allows updating role permissions',
                     ],
                 ]),
             ],

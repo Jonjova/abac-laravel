@@ -46,10 +46,24 @@ Route::middleware('auth')->group(function () {
 
         // Rutas de permisos
         Route::middleware('can:assignPermissions,user')->group(function () {
-            Route::get('/{user}/permissions', 'UsuariosController@permissions')->name('users.permissions');
-            Route::post('/{user}/permissions', 'UsuariosController@assignPermissions')->name('users.permissions.assign');
+            Route::get('/{user}/permissions', 'UsuariosController@permissions')
+                ->name('users.permissions');
+            Route::post('/{user}/permissions', 'UsuariosController@assignPermissions')
+                ->name('users.permissions.assign');
+            Route::post('/{user}/roles', 'UsuariosController@assignRoles')->name('users.roles.assign');
+            // rutas para asignar roles
+           
         });
+ 
+        Route::get('/{user}/roles/{role}/permissions', 'UsuariosController@editRolePermissions')
+            ->middleware('can:editRolePermissions,user')
+            ->name('roles.permissions.edit');
+        Route::put('/{user}/roles/{role}/permissions', 'UsuariosController@updateRolePermissions')
+            ->middleware('can:updateRolePermissions,user')
+            ->name('roles.permissions.update');
 
-        Route::delete('/{user}/permissions/{permission}', 'UsuariosController@revokePermissions')->middleware('can:revokePermission,user,permission')->name('users.permissions.revoke');
+        Route::delete('/{user}/permissions/{permission}', 'UsuariosController@revokePermissions')
+            ->middleware('can:revokePermission,user')
+            ->name('users.permissions.revoke');
     });
 });

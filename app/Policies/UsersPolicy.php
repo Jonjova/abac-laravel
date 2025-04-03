@@ -94,7 +94,7 @@ class UsersPolicy
      */
     public function assignPermissions(User $user)
     {
-        return $user->hasPermissionTo('assign users') ?: abort(403, 'No tienes permiso para asignar permisos a usuario.');
+        return $user->hasPermissionTo('assignPermissions users') ?: abort(403, 'No tienes permiso para asignar permisos a usuario.');
     }
 
     /**
@@ -105,7 +105,19 @@ class UsersPolicy
      */
     public function revokePermissions(User $user)
     {
-        return $user->hasPermissionTo('revoke users') ?: abort(403, 'No tienes permiso para revocar permisos a usuario.');
+        return $user->hasPermissionTo('revokePermission users') ?: abort(403, 'No tienes permiso para revocar permisos a usuario.');
+    }
+
+
+    /**
+     * Determine whether the user can update role permissions.
+     *
+     * @param  \App\User  $user
+     * @return mixed
+     */
+    public function updateRolePermissions(User $user)
+    {
+        return $user->hasPermissionTo('updateRolePermissions users') ?: abort(403, 'No tienes permiso para actualizar permisos de rol.');
     }
 
 }
