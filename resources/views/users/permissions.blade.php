@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        {{-- @include('partials.alerts') --}}
+        @include('partials.alerts')
 
         <div class="row">
             <!-- Sección de Roles y Resumen -->
@@ -252,7 +252,7 @@
                         toastr.success('Permisos actualizados correctamente', 'Éxito', {
                             closeButton: true,
                             progressBar: true,
-                            timeOut: 3000,
+                            timeOut: 1000,
                             iconClass: 'toast-success bg-success'
                         });
 

@@ -55,7 +55,7 @@ class PostController extends Controller
 
         $post->update($request->only('title', 'content'));
 
-        return redirect()->route('posts.index')->with('success', 'Post actualizado correctamente.');
+        return redirect()->route('posts.index')->with('success', 'Post creado con éxito');
     }
 
     public function destroy(Post $post)

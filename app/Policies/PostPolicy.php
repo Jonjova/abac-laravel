@@ -25,7 +25,6 @@ class PostPolicy
      * Determine whether the user can view the post.
      *
      * @param  \App\User  $user
-     * @param  \App\Post  $post
      * @return mixed
      */
     public function view(User $user)
@@ -48,7 +47,6 @@ class PostPolicy
      * Determine whether the user can update the post.
      *
      * @param  \App\User  $user
-     * @param  \App\Post  $post
      * @return mixed
      */
     public function update(User $user)
@@ -60,7 +58,6 @@ class PostPolicy
      * Determine whether the user can delete the post.
      *
      * @param  \App\User  $user
-     * @param  \App\Post  $post
      * @return mixed
      */
     public function delete(User $user)
@@ -72,7 +69,6 @@ class PostPolicy
      * Determine whether the user can restore the post.
      *
      * @param  \App\User  $user
-     * @param  \App\Post  $post
      * @return mixed
      */
     public function restore(User $user)
@@ -84,7 +80,6 @@ class PostPolicy
      * Determine whether the user can permanently delete the post.
      *
      * @param  \App\User  $user
-     * @param  \App\Post  $post
      * @return mixed
      */
     public function forceDelete(User $user)

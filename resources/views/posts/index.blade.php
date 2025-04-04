@@ -4,9 +4,16 @@
     <div class="container">
         <h1>Publicaciones</h1>
         @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+            <script>
+            toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "1000",
+            "iconClass": "toast-success bg-success text-white"
+            };
+            toastr.success("{{ session('success') }}", "Éxito");
+            </script>
         @endif
 
 

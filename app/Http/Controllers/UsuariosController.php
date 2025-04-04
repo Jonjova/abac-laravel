@@ -156,6 +156,7 @@ class UsuariosController extends Controller
             'inheritedPermissions' => $user->getPermissionsViaRoles()->pluck('id')->toArray(),
             'totalPermissionsCount' => $user->getAllPermissions()->count(),
         ];
+        
     }
 
     public function assignRoles(Request $request, User $user)
