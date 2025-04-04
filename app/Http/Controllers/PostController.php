@@ -28,9 +28,21 @@ class PostController extends Controller
             'content' => 'required|string',
         ]);
 
-        Post::create($request->only('title', 'content'));
+       
+        try {
+            Post::create($request->only('title', 'content'));
 
-        return redirect()->route('posts.index')->with('success', 'Post creado correctamente.');
+            return redirect()->route('posts.index')->with([
+                'type' => 'success',
+                'message' => 'Post creado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return back()->with([
+                'type' => 'error',
+                'message' => 'Error al crear el post'
+            ]);
+        }
+        
     }
 
     public function show(Post $post)
@@ -53,15 +65,36 @@ class PostController extends Controller
             'content' => 'required|string',
         ]);
 
-        $post->update($request->only('title', 'content'));
-
-        return redirect()->route('posts.index')->with('success', 'Post creado con éxito');
+        try {
+            $post->update($request->only('title', 'content'));
+            return redirect()->route('posts.index')->with([
+                'type' => 'success',
+                'message' => 'Post creado correctamente'
+            ]);
+            
+        } catch (\Exception $e) {
+            return back()->with([
+                'type' => 'error',
+                'message' => 'Error al crear el post'
+            ]);
+        }
     }
 
     public function destroy(Post $post)
     {
         $this->authorize('delete', $post);
-        $post->delete();
-        return redirect()->route('posts.index')->with('success', 'Post eliminado correctamente.');
+        
+        try {
+            $post->delete();
+            return redirect()->route('posts.index')->with([
+            'type' => 'success',
+            'message' => 'Post eliminado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return back()->with([
+            'type' => 'error',
+            'message' => 'Error al eliminar el post'
+            ]);
+        }
     }
 }

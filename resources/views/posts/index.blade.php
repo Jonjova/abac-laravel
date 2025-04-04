@@ -1,19 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+@include('partials.alerts')
+
     <div class="container">
         <h1>Publicaciones</h1>
-        @if (session('success'))
-            <script>
-                toastr.success('Permisos actualizados correctamente', 'Éxito', {
-                    closeButton: true,
-                    progressBar: true,
-                    timeOut: 1000,
-                    iconClass: 'toast-success bg-success'
-                });
-            </script>
-        @endif
-
+       
 
         @can('create posts')
             <a href="{{ route('posts.create') }}" class="btn btn-primary mb-2">Crear Post</a>

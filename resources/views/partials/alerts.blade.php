@@ -28,3 +28,18 @@
         </button>
     </div>
 @endif
+
+@if (session('type') && session('message'))
+    <script>
+        toastr.{{ session('type') }}(
+            '{{ session("message") }}',
+            '',  // Título vacío (opcional)
+            {
+                closeButton: true,
+                progressBar: true,
+                timeOut: 1000,
+                iconClass: 'toast-{{ session("type") }} bg-{{ session("type") }}'
+            }
+        );
+    </script>
+@endif
