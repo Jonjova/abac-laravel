@@ -9,6 +9,7 @@
             </div>
             <div class="modal-body">
                 <!-- Contenido cargado dinámicamente via AJAX -->
+                
                 <div class="text-center py-4">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Cargando...</span>

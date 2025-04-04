@@ -67,3 +67,4 @@ Route::middleware('auth')->group(function () {
             ->name('users.permissions.revoke');
     });
 });
+

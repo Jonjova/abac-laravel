@@ -195,49 +195,85 @@ class UsuariosController extends Controller
     }
 
     public function editRolePermissions(User $user, Role $role)
-{
-    $this->authorize('editRolePermissions', $user);
-    
-    return view('users.permissions', [ // Esta es tu vista principal
-        'user' => $user,
-        'role' => $role,
-        'permissions' => Permission::orderBy('name')->get(),
-        'userDirectPermissions' => $user->getDirectPermissions()->pluck('id')->toArray(),
-        'inheritedPermissions' => $user->getPermissionsViaRoles()->pluck('id')->toArray(),
-    ]);
-}
-
-public function editRolePermissionsModal(User $user, Role $role)
-{
-    $this->authorize('editRolePermissions', $user);
-    
-    if(request()->ajax()) {
-        return view('users.partials.role_permissions_modal', [
-            'user' => $user,
-            'role' => $role,
-            'permissions' => Permission::orderBy('name')->get(),
-            'rolePermissions' => $role->permissions->pluck('id')->toArray()
-        ]);
+    {
+        try {
+            // Verificar autorización
+            $this->authorize('editRolePermissions', $user);
+            
+            // Cargar datos con eager loading
+            $role->load('permissions');
+            $permissions = Permission::all();
+            
+            // Verificar que los datos existen
+            if ($permissions->isEmpty()) {
+                throw new \Exception("No hay permisos definidos en el sistema");
+            }
+            
+            return view('users.partials.role_permissions_modal', [
+                'user' => $user,
+                'role' => $role,
+                'permissions' => $permissions,
+                'rolePermissions' => $role->permissions->pluck('id')->toArray()
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error("Error loading permissions: " . $e->getMessage());
+            
+            return response()->view('users.partials.error_loading_permissions', [
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-    
-    abort(403);
-}
 
-public function updateRolePermissions(Request $request, User $user, Role $role)
-{
-    $this->authorize('updateRolePermissions', $user);
+    public function editRolePermissionsModal(User $user, Role $role)
+    {
+        $this->authorize('editRolePermissions', $user);
 
-    $validated = $request->validate([
-        'permissions' => 'nullable|array',
-        'permissions.*' => 'exists:permissions,id',
-    ]);
+        try {
+            $permissions = Permission::all();
+            $rolePermissions = $role->permissions->pluck('id')->toArray();
 
-    // Sincroniza los permisos del rol
-    $role->syncPermissions($validated['permissions'] ?? []);
+            // Verifica que los datos existen
+            if ($permissions->isEmpty()) {
+                throw new \Exception('No se encontraron permisos en el sistema');
+            }
 
-    // Redirección correcta
-    return redirect()->route('users.permissions', $user->id)
-        ->with('success', 'Permisos de rol actualizados correctamente.');
-}
-   
+            return view('users.partials.role_permissions_modal', [
+                'user' => $user,
+                'role' => $role,
+                'permissions' => $permissions,
+                'rolePermissions' => $rolePermissions,
+            ]);
+        } catch (\Exception $e) {
+            if (request()->ajax()) {
+                return response()->view(
+                    'users.partials.error_loading_permissions',
+                    [
+                        'error' => $e->getMessage(),
+                    ],
+                    500,
+                );
+            }
+
+            throw $e;
+        }
+    }
+
+    public function updateRolePermissions(Request $request, User $user, Role $role)
+    {
+        $this->authorize('updateRolePermissions', $user);
+
+        $validated = $request->validate([
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
+        $role->syncPermissions($validated['permissions'] ?? []);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()->route('users.permissions', $user->id)->with('success', 'Permisos de rol actualizados correctamente.');
+    }
 }

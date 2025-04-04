@@ -149,7 +149,7 @@
         </div>
     </div>
 
-@section('scripts')
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Deshabilita la edición de permisos heredados (opcional)
@@ -162,29 +162,150 @@
             });
         });
 
-        $('#editPermissionsModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var roleId = button.data('role-id');
-            var roleName = button.data('role-name');
+        $(document).ready(function() {
+            // Para depuración
+            // Manejar la apertura del modal
+            $('#editPermissionsModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var roleId = button.data('role-id');
+                var roleName = button.data('role-name');
 
-            var modal = $(this);
-            modal.find('.modal-title').text('Editar Permisos del Rol: ' + roleName);
+                var modal = $(this);
+                modal.find('.modal-title').text('Editar Permisos del Rol: ' + roleName);
 
-            // Construye la URL correctamente con ambos parámetros
-            var url = '{{ route('roles.permissions.edit', ['user' => ':userId', 'role' => ':roleId']) }}'
-                .replace(':userId', '{{ $user->id }}')
-                .replace(':roleId', roleId);
+                // Mostrar spinner de carga
+                modal.find('.modal-body').html(`
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Cargando...</span>
+                </div>
+                <p>Cargando permisos...</p>
+            </div>
+        `);
 
-            // Carga el formulario via AJAX
-            $.get(url, function(data) {
-                    modal.find('.modal-body').html(data);
-                })
-                .fail(function() {
-                    modal.find('.modal-body').html(
-                        '<div class="alert alert-danger">Error al cargar los permisos</div>'
-                    );
+                // Construir la URL correctamente
+                var url =
+                    '{{ route('roles.permissions.edit', ['user' => $user->id, 'role' => ':roleId']) }}'
+                    .replace(':roleId', roleId);
+
+                console.log('URL a cargar:', url); // Para depuración
+
+                // Cargar el formulario via AJAX
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'html',
+                    success: function(data) {
+                        modal.find('.modal-body').html(data);
+                    },
+                    error: function(xhr) {
+                        let errorMsg = 'Error al cargar los permisos';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMsg +=
+                                `<br><small>${response.message || xhr.statusText}</small>`;
+                        } catch (e) {
+                            errorMsg += `<br><small>${xhr.statusText} (${xhr.status})</small>`;
+                        }
+
+                        modal.find('.modal-body').html(`
+                <div class="alert alert-danger">
+                    ${errorMsg}
+                    <button class="btn btn-sm btn-link mt-2" onclick="$(this).closest('.modal').modal('hide')">
+                        Cerrar
+                    </button>
+                    <button class="btn btn-sm btn-warning mt-2" onclick="window.location.reload()">
+                        Recargar página
+                    </button>
+                </div>
+            `);
+                    }
                 });
+            });
+
+            // Resto del código para guardar...
+            // Manejar el clic en el botón Guardar Cambios
+            $(document).on('click', '#savePermissionsBtn', function() {
+                var form = $('#permissionsForm');
+                var url = form.attr('action');
+                var formData = form.serialize();
+                var modal = $('#editPermissionsModal');
+                var btn = $(this);
+
+                // Mostrar estado de carga en el botón
+                btn.prop('disabled', true).html(`
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Guardando...
+        `);
+
+                // Enviar datos via AJAX
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'X-HTTP-Method-Override': 'PUT',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        // Mostrar notificación de éxito
+                        toastr.success('Permisos actualizados correctamente', 'Éxito', {
+                            closeButton: true,
+                            progressBar: true,
+                            timeOut: 3000,
+                            iconClass: 'toast-success bg-success'
+                        });
+
+                        // Cerrar el modal después de un breve retraso
+                        setTimeout(function() {
+                            modal.modal('hide');
+                        }, 1000);
+
+                        // Opcional: Recargar la página o actualizar la UI
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1500);
+                    },
+                    error: function(xhr) {
+                        var errorMsg = 'Error al guardar los permisos';
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            errorMsg = response.message || errorMsg;
+
+                            // Mostrar errores de validación si existen
+                            if (response.errors) {
+                                errorMsg += '<ul>';
+                                $.each(response.errors, function(key, value) {
+                                    errorMsg += '<li>' + value + '</li>';
+                                });
+                                errorMsg += '</ul>';
+                            }
+                        } catch (e) {
+                            errorMsg += '<br><small>' + xhr.statusText + '</small>';
+                        }
+
+                        toastr.error(errorMsg, 'Error', {
+                            closeButton: true,
+                            timeOut: 0,
+                            extendedTimeOut: 0,
+                            preventDuplicates: true
+                        });
+                    },
+                    complete: function() {
+                        // Restaurar el botón a su estado normal
+                        btn.prop('disabled', false).text('Guardar Cambios');
+                    }
+                });
+            });
+
+            // Manejar el envío del formulario al presionar Enter
+            $(document).on('keypress', '#permissionsForm input', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $('#savePermissionsBtn').click();
+                }
+            });
+
         });
     </script>
-@endsection
 @endsection

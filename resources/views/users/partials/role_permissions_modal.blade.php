@@ -1,4 +1,4 @@
-<form id="permissionsForm" action="{{ route('users.roles.permissions.update', ['user' => $user->id, 'role' => $role->id]) }}" method="POST">
+<form id="permissionsForm" action="{{ route('roles.permissions.update', ['user' => $user->id, 'role' => $role->id]) }}" method="POST">
     @csrf
     @method('PUT')
     

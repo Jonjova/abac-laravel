@@ -120,4 +120,15 @@ class UsersPolicy
         return $user->hasPermissionTo('updateRolePermissions users') ?: abort(403, 'No tienes permiso para actualizar permisos de rol.');
     }
 
+    /**
+     * Determine whether the user can edit role permissions.
+     *
+     * @param  \App\User  $user
+     * @return mixed
+     */
+    public function editRolePermissions(User $user)
+    {
+        return $user->hasPermissionTo('editRolePermissions users') ?: abort(403, 'No tienes permiso para editar permisos de rol.');
+    }
+
 }

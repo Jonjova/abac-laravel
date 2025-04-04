@@ -288,5 +288,28 @@ class PermissionsSeeder extends Seeder
                 ]),
             ],
         ]);
+        // editRolePermissions
+        Permission::insert([
+            [
+                'name' => 'editRolePermissions users',
+                'guard_name' => 'web',
+                'details' => json_encode([
+                    'module' => [
+                        'name' => 'Users',
+                        'icon' => 'users',
+                        'color' => 'text-primary',
+                    ],
+                    'permission' => [
+                        'icon' => 'fa-user-edit',
+                        'code' => 'USER-ERP',
+                        'color' => 'text-primary',
+                    ],
+                    'descriptions' => [
+                        'es' => 'Permite editar permisos de roles',
+                        'en' => 'Allows editing role permissions',
+                    ],
+                ]),
+            ],
+        ]);
     }
 }
