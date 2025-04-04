@@ -210,7 +210,7 @@ class UsuariosController extends Controller
                 throw new \Exception("No hay permisos definidos en el sistema");
             }
             
-            return view('users.partials.role_permissions_modal', [
+            return view('partials.role_permissions_modal', [
                 'user' => $user,
                 'role' => $role,
                 'permissions' => $permissions,
@@ -220,7 +220,7 @@ class UsuariosController extends Controller
         } catch (\Exception $e) {
             \Log::error("Error loading permissions: " . $e->getMessage());
             
-            return response()->view('users.partials.error_loading_permissions', [
+            return response()->view('partials.error_loading_permissions', [
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -239,7 +239,7 @@ class UsuariosController extends Controller
                 throw new \Exception('No se encontraron permisos en el sistema');
             }
 
-            return view('users.partials.role_permissions_modal', [
+            return view('partials.role_permissions_modal', [
                 'user' => $user,
                 'role' => $role,
                 'permissions' => $permissions,
@@ -248,7 +248,7 @@ class UsuariosController extends Controller
         } catch (\Exception $e) {
             if (request()->ajax()) {
                 return response()->view(
-                    'users.partials.error_loading_permissions',
+                    'partials.error_loading_permissions',
                     [
                         'error' => $e->getMessage(),
                     ],
