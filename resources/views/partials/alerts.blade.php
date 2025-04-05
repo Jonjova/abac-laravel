@@ -37,7 +37,7 @@
             {
                 closeButton: true,
                 progressBar: true,
-                timeOut: 1000,
+                timeOut: 2000,
                 iconClass: 'toast-{{ session("type") }} bg-{{ session("type") }}'
             }
         );

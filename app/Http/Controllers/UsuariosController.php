@@ -132,17 +132,24 @@ class UsuariosController extends Controller
         $validated = $request->validate([
             'direct_permissions' => 'nullable|array', // Permisos directos (manuales)
             'direct_permissions.*' => 'exists:permissions,id',
-            'inherited_permissions' => 'nullable|array', // Permisos heredados (de roles)
-            'inherited_permissions.*' => 'exists:permissions,id',
         ]);
 
-        // Combina ambos tipos de permisos (directos + heredados seleccionados)
-        $allPermissions = array_unique(array_merge($validated['direct_permissions'] ?? [], $validated['inherited_permissions'] ?? []));
+        // Solo sincroniza los permisos directos proporcionados
+        $allPermissions = $validated['direct_permissions'] ?? [];
 
-        // Sincroniza TODOS los permisos (directos + heredados seleccionados)
-        $user->syncPermissions($allPermissions);
+        try {
+            $user->syncPermissions($allPermissions);
 
-        return redirect()->route('users.permissions', $user)->with('success', 'Permisos actualizados correctamente.')->with($this->getPermissionsData($user));
+            return back()->with([
+                'type' => 'success',
+                'message' => 'Permisos actualizados correctamente'
+            ])->with($this->getPermissionsData($user));
+        } catch (\Exception $e) {
+            return back()->with([
+                'type' => 'error',
+                'message' => 'Error al actualizar los permisos'
+            ])->with($this->getPermissionsData($user));
+        }
     }
 
     private function getPermissionsData(User $user)
@@ -168,9 +175,19 @@ class UsuariosController extends Controller
             'roles.*' => 'exists:roles,id',
         ]);
 
-        $user->syncRoles($validated['roles'] ?? []);
+        try {
+            $user->syncRoles($validated['roles'] ?? []);
 
-        return redirect()->route('users.index')->with('success', 'Roles actualizados correctamente.');
+            return back()->with([
+            'type' => 'success',
+            'message' => 'Roles actualizados correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return back()->with([
+            'type' => 'error',
+            'message' => 'Error al actualizar los roles'
+            ]);
+        }
     }
     /**
      * Revoca un permiso específico (tanto directo como heredado)
