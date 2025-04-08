@@ -92,64 +92,274 @@
                         <small class="text-white-50">Permisos directos y heredados</small>
                     </div>
                     <div class="card-body">
+                        <!-- Form para asignar -->
                         <form action="{{ route('users.permissions.assign', $user) }}" method="POST">
                             @csrf
                             <div class="row">
-                                @foreach ($permissions->chunk(ceil($permissions->count() / 3)) as $chunk)
-                                    <div class="col-md-4">
-                                        @foreach ($chunk as $permission)
-                                            @php
-                                                $isInherited = in_array($permission->id, $inheritedPermissions);
-                                                $isDirect = in_array($permission->id, $userDirectPermissions);
-                                            @endphp
+                                <div class="col-md-12">
+                                    <!-- Botón para expandir/colapsar todos (opcional) -->
+                                    <button class="btn btn-sm btn-secondary toggle-all-modules mb-3" data-action="expand">
+                                        Expandir Todos
+                                    </button>
 
-                                            <div class="custom-control custom-checkbox mb-3">
-                                                <!-- Checkbox principal -->
-                                                <input type="checkbox" class="custom-control-input"
-                                                    id="perm_{{ $permission->id }}"
-                                                    name="{{ $isInherited ? 'inherited_permissions[]' : 'direct_permissions[]' }}"
-                                                    value="{{ $permission->id }}"
-                                                    {{ $isInherited || $isDirect ? 'checked' : '' }}
-                                                    {{ $isInherited ? 'data-is-inherited="true"' : '' }}>
+                                    @php
+                                        // Agrupar permisos por módulo (código existente)
+                                        $groupedPermissions = [];
+                                        foreach ($permissions as $permission) {
+                                            $details = is_string($permission->details)
+                                                ? json_decode($permission->details, true)
+                                                : $permission->details ?? [];
 
-                                                <label class="custom-control-label" for="perm_{{ $permission->id }}">
-                                                    <strong>{{ $permission->name }}</strong>
+                                            $moduleName =
+                                                $details['module']['name'] ??
+                                                (explode(' ', $permission->name, 2)[1] ?? 'Otros');
+                                            $moduleIcon = $details['module']['icon'] ?? 'folder';
+                                            $moduleColor = $details['module']['color'] ?? 'text-secondary';
 
-                                                    <!-- Badges informativos -->
-                                                    @if ($isInherited)
-                                                        <div class="mt-1">
-                                                            <span class="badge badge-success">
-                                                                <i class="fas fa-link"></i> Heredado
-                                                            </span>
-                                                            @foreach ($user->roles as $role)
-                                                                @if ($role->hasPermissionTo($permission->name))
-                                                                    <span
-                                                                        class="badge badge-info ml-1">{{ $role->name }}</span>
-                                                                @endif
+                                            if (!isset($groupedPermissions[$moduleName])) {
+                                                $groupedPermissions[$moduleName] = [
+                                                    'icon' => $moduleIcon,
+                                                    'color' => $moduleColor,
+                                                    'permissions' => [],
+                                                ];
+                                            }
+
+                                            $permissionNameParts = explode(' ', $permission->name, 2);
+                                            $action = $permissionNameParts[0];
+
+                                            $groupedPermissions[$moduleName]['permissions'][] = [
+                                                'id' => $permission->id,
+                                                'action' => $action,
+                                                'name' => $permission->name,
+                                                'isInherited' => in_array($permission->id, $inheritedPermissions),
+                                                'isDirect' => in_array($permission->id, $userDirectPermissions),
+                                                'details' => $details,
+                                            ];
+                                        }
+                                    @endphp
+
+                                    <div class="permissions-tree">
+                                        @foreach ($groupedPermissions as $moduleName => $moduleData)
+                                            <div class="card mb-3">
+                                                <div class="card-header d-flex justify-content-between align-items-center module-header collapsed"
+                                                    data-toggle="collapse" href="#module-{{ Str::slug($moduleName) }}"
+                                                    role="button" aria-expanded="false">
+                                                    <div>
+                                                        <i
+                                                            class="fas fa-{{ $moduleData['icon'] }} {{ $moduleData['color'] }} mr-2"></i>
+                                                        <strong>{{ $moduleName }}</strong>
+                                                    </div>
+                                                    <i class="fas fa-chevron-down toggle-icon"></i>
+                                                </div>
+
+                                                <div class="collapse" id="module-{{ Str::slug($moduleName) }}">
+                                                    <div class="card-body">
+                                                        <ul class="list-group list-group-flush">
+                                                            @foreach ($moduleData['permissions'] as $permission)
+                                                                <li
+                                                                    class="list-group-item {{ $permission['isInherited'] ? 'inherited-permission-item' : '' }}">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <!-- Checkbox y botón de edición juntos -->
+                                                                        <div class="d-flex align-items-center mr-3"
+                                                                            style="min-width: 45px;">
+                                                                            <!-- Botón de edición (solo visible si no es heredado) -->
+                                                                            @if (!$permission['isInherited'])
+                                                                                <button type="button"
+                                                                                    class="btn btn-sm btn-outline-primary py-0 px-2 mr-2"
+                                                                                    data-toggle="modal"
+                                                                                    data-target="#editPermissionModal"
+                                                                                    data-permission-id="{{ $permission['id'] }}"
+                                                                                    data-permission-name="{{ $permission['name'] }}"
+                                                                                    data-permission-description="{{ $permission['details']['descriptions']['es'] ?? '' }}"
+                                                                                    title="Editar permiso">
+                                                                                    <i class="fas fa-edit fa-sm"></i>
+                                                                                </button>
+                                                                            @endif
+
+                                                                            <!-- Checkbox (deshabilitado si es heredado) -->
+                                                                            <div class="custom-control custom-checkbox">
+                                                                                <input type="checkbox"
+                                                                                    class="custom-control-input"
+                                                                                    id="perm_{{ $permission['id'] }}"
+                                                                                    name="{{ $permission['isInherited'] ? 'inherited_permissions[]' : 'direct_permissions[]' }}"
+                                                                                    value="{{ $permission['id'] }}"
+                                                                                    {{ $permission['isInherited'] || $permission['isDirect'] ? 'checked' : '' }}
+                                                                                    {{ $permission['isInherited'] ? 'disabled data-is-inherited="true"' : '' }}>
+                                                                                <label class="custom-control-label"
+                                                                                    for="perm_{{ $permission['id'] }}"></label>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <!-- Información del permiso -->
+                                                                        <div class="flex-grow-1">
+                                                                            <div
+                                                                                class="d-flex justify-content-between align-items-center flex-wrap">
+                                                                                <div class="permission-info">
+                                                                                    <strong>{{ $permission['action'] }}</strong>
+                                                                                    @if (isset($permission['details']['descriptions']['es']))
+                                                                                        <small
+                                                                                            class="text-muted d-block">{{ $permission['details']['descriptions']['es'] }}</small>
+                                                                                    @endif
+                                                                                </div>
+
+                                                                                <div class="badges-container">
+                                                                                    @if ($permission['isInherited'])
+                                                                                        <span
+                                                                                            class="badge badge-success mr-1 mb-1">
+                                                                                            <i class="fas fa-link"></i>
+                                                                                            Heredado
+                                                                                        </span>
+                                                                                        <div
+                                                                                            class="d-inline-flex flex-wrap">
+                                                                                            @foreach ($user->roles as $role)
+                                                                                                @if ($role->hasPermissionTo($permission['name']))
+                                                                                                    <span
+                                                                                                        class="badge badge-info mb-1 mr-1">{{ $role->name }}</span>
+                                                                                                @endif
+                                                                                            @endforeach
+                                                                                        </div>
+                                                                                    @elseif($permission['isDirect'])
+                                                                                        <span
+                                                                                            class="badge badge-primary mb-1">
+                                                                                            <i
+                                                                                                class="fas fa-user-shield"></i>
+                                                                                            Directo
+                                                                                        </span>
+                                                                                    @endif
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
                                                             @endforeach
-                                                        </div>
-                                                    @elseif($isDirect)
-                                                        <span class="badge badge-primary ml-1">
-                                                            <i class="fas fa-user-shield"></i> Directo
-                                                        </span>
-                                                    @endif
-                                                </label>
+                                                        </ul>
+                                                    </div>
+                                                </div>
                                             </div>
                                         @endforeach
                                     </div>
-                                @endforeach
+                                </div>
                             </div>
+
                             <button type="submit" class="btn btn-primary btn-block mt-4">
                                 <i class="fas fa-save"></i> Guardar Todos los Permisos
                             </button>
                         </form>
+
+                        <!-- Modal para editar permisos y atributos -->
+                        @include('users.modals.edit_atribute')
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <style>
+        .permissions-tree .module-header {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
+        .permissions-tree .module-header:hover {
+            background-color: #f8f9fa;
+        }
+
+        .permissions-tree .toggle-icon {
+            transition: transform 0.3s;
+        }
+
+        .permissions-tree .module-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .permissions-tree .list-group-item {
+            border-left: none;
+            border-right: none;
+        }
+
+        .permissions-tree .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Estilos para badges en móvil */
+        .permissions-tree .badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .permissions-tree .badge {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* Estilo para permisos heredados */
+        .permissions-tree .inherited-permission {
+            opacity: 0.7;
+        }
+
+        /* Ajustes para móvil */
+        @media (max-width: 768px) {
+            .permissions-tree .permission-info {
+                width: 100%;
+            }
+
+            .permissions-tree .badges-container {
+                width: 100%;
+            }
+        }
+
+        /* Estilos para el grupo checkbox + botón */
+        .list-group-item .d-flex.align-items-center {
+            gap: 10px;
+        }
+
+        /* Botón de edición compacto */
+        .btn-outline-primary.py-0 {
+            padding-top: 0;
+            padding-bottom: 0;
+            line-height: 1.5;
+        }
+
+        /* Ajustes para móvil */
+        @media (max-width: 768px) {
+            .list-group-item .d-flex.align-items-center {
+                flex-wrap: wrap;
+            }
+
+            .list-group-item .d-flex.align-items-center>div:first-child {
+                margin-bottom: 8px;
+                min-width: 100%;
+            }
+
+            .badges-container {
+                width: 100%;
+            }
+        }
+
+        /* Estilo para items de permisos heredados */
+        .inherited-permission-item {
+            opacity: 0.7;
+            background-color: #f8f9fa;
+        }
+
+        .inherited-permission-item .badge-success {
+            opacity: 1;
+        }
+
+        /* Estilo para checkboxes deshabilitados */
+        .custom-control-input:disabled~.custom-control-label::before {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        /* Mantener badges visibles aunque el item esté semi-transparente */
+        .badge {
+            opacity: 1 !important;
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Deshabilita la edición de permisos heredados (opcional)
@@ -223,7 +433,7 @@
                 });
             });
 
-            // Resto del código para guardar...
+
             // Manejar el clic en el botón Guardar Cambios
             $(document).on('click', '#savePermissionsBtn', function() {
                 var form = $('#permissionsForm');
@@ -306,6 +516,61 @@
                 }
             });
 
+        });
+
+        $(document).ready(function() {
+            // Manejar el estado de los iconos de toggle
+            $('.module-header').on('click', function() {
+                $(this).toggleClass('collapsed');
+            });
+
+            // Colapsar/expandir todos los módulos
+            $('.toggle-all-modules').on('click', function(e) {
+                e.preventDefault();
+                const action = $(this).data('action');
+                if (action === 'expand') {
+                    $('.module-header').removeClass('collapsed');
+                    $('.collapse').collapse('show');
+                    $(this).data('action', 'collapse').text('Colapsar Todos');
+                } else {
+                    $('.module-header').addClass('collapsed');
+                    $('.collapse').collapse('hide');
+                    $(this).data('action', 'expand').text('Expandir Todos');
+                }
+            });
+
+            // Manejar el modal de edición
+            $('#editPermissionModal').on('show.bs.modal', function(event) {
+                const button = $(event.relatedTarget);
+                const permissionId = button.data('permission-id');
+                const permissionName = button.data('permission-name');
+                const permissionDescription = button.data('permission-description');
+
+                const modal = $(this);
+                modal.find('#edit_permission_id').val(permissionId);
+                modal.find('#edit_permission_name').val(permissionName);
+                modal.find('#edit_permission_description').val(permissionDescription);
+            });
+
+            // Guardar cambios
+            $('#savePermissionChanges').on('click', function() {
+                const formData = $('#editPermissionForm').serialize();
+
+                // Ejemplo de AJAX (debes adaptarlo a tu backend)
+                $.ajax({
+                    url: '/permissions/update',
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        $('#editPermissionModal').modal('hide');
+                        toastr.success('Permiso actualizado correctamente');
+                        // Actualizar la UI si es necesario
+                    },
+                    error: function(xhr) {
+                        toastr.error('Error al actualizar el permiso');
+                    }
+                });
+            });
         });
     </script>
 @endsection

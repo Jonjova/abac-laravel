@@ -248,7 +248,16 @@ class UsuariosController extends Controller
         $this->authorize('editRolePermissions', $user);
 
         try {
-            $permissions = Permission::all();
+           
+            $permissions = Permission::all()->map(function($permission) {
+                if ($permission->details) {
+                    // Decodificar el JSON si es una cadena
+                    $permission->details = is_string($permission->details) 
+                        ? json_decode($permission->details, true) 
+                        : $permission->details;
+                }
+                return $permission;
+            });
             $rolePermissions = $role->permissions->pluck('id')->toArray();
 
             // Verifica que los datos existen
